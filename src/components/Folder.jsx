@@ -1,11 +1,17 @@
-import { useState } from "react";
-import { FileIcon, FolderIcon } from "./icons";
+/* eslint-disable react/jsx-key */
+/* eslint-disable react/prop-types */
+import { useState } from 'react';
+import { FileIcon, FolderIcon } from './icons';
 
-function Folder({ handleInsertNode = () => {}, explorer }) {
+function Folder({
+  handleInsertNode = () => {},
+  handleDeleteNode = () => {},
+  explorer,
+}) {
   const [expand, setExpand] = useState(false);
   const [showInput, setShowInput] = useState({
     visible: false,
-    isFolder: false
+    isFolder: false,
   });
 
   const handleNewFolder = (e, isFolder) => {
@@ -13,7 +19,7 @@ function Folder({ handleInsertNode = () => {}, explorer }) {
     setExpand(true);
     setShowInput({
       visible: true,
-      isFolder
+      isFolder,
     });
   };
 
@@ -46,10 +52,16 @@ function Folder({ handleInsertNode = () => {}, explorer }) {
               >
                 <FileIcon /> +
               </button>
+              <button
+                className="bordered delete"
+                onClick={() => handleDeleteNode(explorer.id)}
+              >
+                Delete
+              </button>
             </div>
           </div>
 
-          <div style={{ display: expand ? "block" : "none", paddingLeft: 25 }}>
+          <div style={{ display: expand ? 'block' : 'none', paddingLeft: 25 }}>
             {showInput.visible && (
               <div className="inputContainer">
                 <span>
@@ -66,12 +78,28 @@ function Folder({ handleInsertNode = () => {}, explorer }) {
             )}
 
             {explorer.items.map((data) => {
-              if(data.isFolder){
-                return <Folder explorer={data} handleInsertNode={handleInsertNode}/>
+              if (data.isFolder) {
+                return (
+                  <Folder
+                    key={data.id}
+                    explorer={data}
+                    handleInsertNode={handleInsertNode}
+                    handleDeleteNode={handleDeleteNode}
+                  />
+                );
               }
               return (
                 <span className="file">
-                  <FileIcon /> <span>{explorer.name}</span>
+                  <FileIcon /> <span>{explorer.name}</span>{' '}
+                  <button
+                    className="bordered delete"
+                    onClick={() => {
+                      console.log('delete clicked');
+                      handleDeleteNode(data.id);
+                    }}
+                  >
+                    Delete
+                  </button>
                 </span>
               );
             })}
@@ -80,6 +108,15 @@ function Folder({ handleInsertNode = () => {}, explorer }) {
       ) : (
         <span className="file">
           <FileIcon /> <span>{explorer.name}</span>
+          <button
+            className="bordered delete"
+            onClick={() => {
+              console.log('delete clicked');
+              handleDeleteNode(explorer.id);
+            }}
+          >
+            Delete
+          </button>
         </span>
       )}
     </>
